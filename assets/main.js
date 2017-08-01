@@ -1,3 +1,8 @@
+// John Brock
+// Snake.js
+// https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
+// TODO: Add date finished.
+
 // Creates width X height grids filled with ' '
 var grid = function(width, height) {
   // validate inputs
@@ -23,7 +28,8 @@ var grid = function(width, height) {
   };
   // populate grid with rows
   for (let i = 0; i < height; i++) {
-    grid.push(row);
+    let rowCopy = [...row]
+    grid.push(rowCopy);
   };
   return grid;
 };
@@ -35,16 +41,6 @@ var validateGrid = function(grid, callerName) {
     console.log(`invalid grid at ${callerName}`);
     return false;
   }
-};
-
-// set the content of the game area
-var setGameArea = function(grid) {
-  if (!validateGrid(grid, 'setGameArea')) {
-    console.log("Can't set game area");
-    return false;
-  }
-  $( '#game-area' ).html(parseGrid(grid));
-  return true;
 };
 
 // accepts a two dimension grid of string and returns html
@@ -64,6 +60,16 @@ var parseGrid = function(grid) {
   return html;
 };
 
+// set the content of the game area
+var setGameArea = function(grid) {
+  if (!validateGrid(grid, 'setGameArea')) {
+    console.log("Can't set game area");
+    return false;
+  }
+  $( '#game-area' ).html(parseGrid(grid));
+  return true;
+};
+
 // adds a grid of divs on the in the #game-area
 var render = function(grid) {
   validateGrid(grid, 'render');
@@ -72,8 +78,26 @@ var render = function(grid) {
   }
 };
 
+var snakeFactory = function() {
+  console.log("We make snake.");
+  return { snakeCoordinates: [[20,20]], direction: 'r' };
+};
+
+let snake = snakeFactory();
+
+// spawns a snake at (x,y)
+var spawnSnake = function(grid, x, y) {
+  if (!validateGrid(grid, 'parseGrid')){
+    console.log("Can't spawn snake.");
+    return false;
+  }
+  grid[grid.length - y - 1][x] = "O";
+  return grid;
+};
+
 $( document ).ready(function() {
   // instantiate grid
   let gameGrid = grid(40,40);
+  gameGrid = spawnSnake(gameGrid, 20, 20);
   render(gameGrid);
 });
