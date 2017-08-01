@@ -39,14 +39,20 @@ var validateGrid = function(grid, callerName) {
 
 // set the content of the game area
 var setGameArea = function(grid) {
-  validateGrid(grid, 'setGameArea');
+  if (!validateGrid(grid, 'setGameArea')) {
+    console.log("Can't set game area");
+    return false;
+  }
   $( '#game-area' ).html(parseGrid(grid));
   return true;
 };
 
 // accepts a two dimension grid of string and returns html
 var parseGrid = function(grid) {
-  validateGrid(grid, 'parseGrid');
+  if (!validateGrid(grid, 'parseGrid')){
+    console.log("Can't parse grid.");
+    return false;
+  }
   let html = '';
   for (let i = 0; i < grid.length; i++) {
     html = `${html} <div class="grid-row">`;
@@ -61,12 +67,8 @@ var parseGrid = function(grid) {
 // adds a grid of divs on the in the #game-area
 var render = function(grid) {
   validateGrid(grid, 'render');
-    if (setGameArea(grid)) {
-      console.log('Game area rendered');
-    }
-  } else {
-    console.log("Render's argument wasn't an array of arrays");
-    return false;
+  if (setGameArea(grid)) {
+    console.log('Game area rendered');
   }
 };
 
