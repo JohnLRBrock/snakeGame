@@ -80,11 +80,16 @@ var render = function(grid) {
 
 var snakeFactory = function() {
   console.log("We make snake.");
-  return { snakeCoordinates: [[20,20]], direction: 'r' };
+  return {
+    snakeCoordinates: [[20,20]],
+    direction: 'r',
+    setDirection: function(dir) {
+      this.direction = dir;
+    },
+  };
 };
 
-let snake = snakeFactory();
-
+// TODO: remove
 // spawns a snake at (x,y)
 var spawnSnake = function(grid, x, y) {
   if (!validateGrid(grid, 'parseGrid')){
@@ -95,9 +100,39 @@ var spawnSnake = function(grid, x, y) {
   return grid;
 };
 
+var watchForArrowKeys = function(snake) {
+    $( document ).keydown(function( event ) {
+    // left = 37
+    // up = 38
+    // right = 39
+    // down = 40
+    switch (event.which) {
+    case 37:
+      console.log('Player pressed left');
+      snake.setDirection('l');
+      console.log(snake.direction)
+      break;
+    case 38:
+      console.log('Player pressed up');
+      snake.setDirection('u');
+      break;
+    case 39:
+      console.log('Player pressed right');
+      snake.setDirection('r');
+      break;
+    case 40:
+      console.log('Player pressed down');
+      snake.setDirection('d');
+      break;
+    }
+  });
+};
+
 $( document ).ready(function() {
   // instantiate grid
   let gameGrid = grid(40,40);
-  gameGrid = spawnSnake(gameGrid, 20, 20);
   render(gameGrid);
+  let snake = snakeFactory();
+  watchForArrowKeys(snake);
+  setTimeout(3000);
 });
