@@ -3,7 +3,7 @@
 // https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
 // TODO: Add date finished.
 
-// Creates width X height grids filled with ' '
+// returns grid object
 const gridFactory = function (width, height) {
   // validate inputs
   if (!Number.isInteger(width) || !Number.isInteger(height)) {
@@ -31,9 +31,12 @@ const gridFactory = function (width, height) {
     const rowCopy = [...row];
     grid.push(rowCopy);
   }
-  return grid;
+  return {
+    gameGrid: grid,
+  };
 };
 
+// TODO: Add as grid object method
 const validateGrid = function (grid, callerName) {
   if (Array.isArray(grid) && grid.every(Array.isArray)) {
     return true;
@@ -42,6 +45,7 @@ const validateGrid = function (grid, callerName) {
   return false;
 };
 
+// TODO: Add as grid object method
 // accepts a two dimension grid of string and returns html
 const parseGrid = function (grid) {
   if (!validateGrid(grid, 'parseGrid')) {
@@ -59,6 +63,7 @@ const parseGrid = function (grid) {
   return html;
 };
 
+// TODO: Add as grid object method
 // add snake to grid
 const insertSnake = function (grid, snake) {
   for (let i = 0; i < snake.length(); i += 1) {
@@ -69,10 +74,12 @@ const insertSnake = function (grid, snake) {
   return grid;
 };
 
+// TODO: Add as grid object method
 const insertFood = function (grid) {
   return grid;
 };
 
+// TODO: Rewrite with grid object methods
 // set the content of the game area
 const setGameArea = function (grid, snake) {
   if (!validateGrid(grid, 'setGameArea')) {
@@ -85,6 +92,7 @@ const setGameArea = function (grid, snake) {
   return true;
 };
 
+// TODO: Rewrite with grid object methods
 // adds a grid of divs on the in the #game-area
 const render = function (snake) {
   const grid = gridFactory(40, 40);
@@ -108,19 +116,21 @@ const snakeFactory = function () {
     moveUp()    { this.coordinates[0][1] = this.coordinates[0][1] - 1; },
     moveDown()  { this.coordinates[0][1] = this.coordinates[0][1] - 1; },
     move() {
-      switch(this.direction) {
-      case('l'):
-        this.moveLeft();
-        break;
-      case('r'):
-        this.moveRight();
-        break;
-      case('u'):
-        this.moveUp();
-        break;
-      case('d'):
-        this.moveDown();
-        break;
+      switch (this.direction) {
+        case ('l'):
+          this.moveLeft();
+          break;
+        case ('r'):
+          this.moveRight();
+          break;
+        case ('u'):
+          this.moveUp();
+          break;
+        case ('d'):
+          this.moveDown();
+          break;
+        default:
+          console.log('Invalid movement direction');
       }
     },
   };
@@ -128,12 +138,12 @@ const snakeFactory = function () {
 
 // watches for arrow key presses
 // if there is one sets the snake's direction
-var watchForArrowKeys = function(snake) {
+const watchForArrowKeys = function (snake) {
   const left  = 37;
   const up    = 38;
   const right = 39;
   const down  = 40;
-    $( document ).keydown(function( event ) {
+    $(document).keydown(function (event) {
     switch (event.which) {
     case left:
       console.log('Player pressed left');
@@ -151,26 +161,27 @@ var watchForArrowKeys = function(snake) {
       console.log('Player pressed down');
       snake.setDirection('d');
       break;
+    default:
     }
   });
 };
 
 // cycles the game
-var turn = function(snake) {
-  let i = 0 
+const turn = function (snake) {
+  let i = 0;
   while (i < 10) {
-
-    setTimeout(function(){     
+    setTimeout(function () {     
       render(snake);
-      snake.move(); }
+      snake.move();
+    }
       , 3000);
-    i++;
+    i += 1;
   }
 };
 
-$( document ).ready(function() {
+$(document).ready(function () {
   // make snake
-  let snake = snakeFactory();
+  const snake = snakeFactory();
   // control snake
   watchForArrowKeys(snake);
   // let's wait a second
