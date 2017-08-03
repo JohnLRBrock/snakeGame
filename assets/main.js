@@ -11,12 +11,12 @@ const gridFactory = function (width, height) {
     return false;
   }
   if (width < 1) {
-    console.log('Grid width to small. Set to 1.');
-    width = 1;
+    console.log('Grid width to small.');
+    return false;
   }
   if (height < 1) {
-    console.log('Grid height to small. Set to 1.');
-    height = 1;
+    console.log('Grid height to small.');
+    return false;
   }
 
   // create empty grid and row
