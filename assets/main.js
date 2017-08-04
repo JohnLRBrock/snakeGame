@@ -33,82 +33,145 @@ const gridFactory = function (width, height) {
   }
   return {
     gameGrid: grid,
+    emptyGrid: [...grid],
+    foodCoordinate: false,
+    height() { return this.gameGrid.length; },
+    width() { return this.gameGrid[0].length; },
+
+    validateGrid(callerName) {
+      if (!Array.isArray(this.gameGrid)) {
+        console.log(`Invalid gameGrid at ${callerName}. Not an array.`);
+        return false;
+      }
+      if (!this.gameGrid.every(Array.isArray)) {
+        console.log(`Invalid gameGrid at ${callerName}. Not a two dimensional array.`);
+        return false;
+      }
+      if (this.height() < 1) {
+        console.log(`Invalid gameGrid at ${callerName}. Height less than 1`);
+        return false;
+      }
+      if (this.width() < 1) {
+        console.log(`Invalid gameGrid at ${callerName}. Width less than 1`);
+        return false;
+      }
+      // is every row same length?
+      for (let i = 1; i < this.gameGrid.length; i += 1) {
+        if (this.gameGrid[0].length !== this.gameGrid[i].length) {
+          console.log(`Invalid gameGrid at ${callerName}. Row ${i} different length.`);
+          return false;
+        }
+      }
+      return true;
+    },
+    clearGrid() {
+      this.gameGrid = [...this.emptyGrid];
+    },
+    // outputs HTML representation of grid
+    parseGrid() {
+      if (!this.validateGrid('parseGrid')) {
+        return false;
+      }
+      let html = '';
+      for (let i = 0; i < this.height(); i += 1) {
+        html = `${html} <div class="grid-row">`;
+        for (let j = 0; j < this.width(); j += 1) {
+          html = `${html} <div class="grid-square">${this.gameGrid[i][j]}</div>`;
+        }
+        html = `${html} </div>`;
+      }
+      return html;
+    },
+    // adds the snake to the game area
+    insertSnake(snake) {
+      for (let i = 0; i < snake.length(); i += 1) {
+        const x = snake.coordinates[i][0] - 1;
+        const y = this.height() - snake.coordinates[i][1] - 1;
+        this.gameGrid[y][x] = 'O';
+      }
+      return grid;
+    },
+    // return false if no food needs to be spawned
+    // else add food to random, non-snake, location and return true
+    spawnFood(snake) {
+      if (!this.validateGrid('spawnFood')) {
+        return false;
+      }
+      // food already exists and snake hasn't eaten it.
+      if (this.foodCoordinate && snake.coordinates[0] !== this.foodCoordinate) {
+        console.log('Food not spawned. Food already exists.');
+        return false;
+      }
+      if (!snake.validateSnake('spawnFood')) {
+        console.log('Food not spawned. Invalid snake.');
+        return false;
+      }
+      // define array of points that isn't the snake
+      const notSnake = [];
+      for (let i = 0; i < this.height(); i += 1) {
+        for (let j = 0; j < this.width(); j += 1) {
+          if (!snake.coordinates.includes([i, j])) {
+            notSnake.push([i, j]);
+          }
+        }
+      }
+      // pick random point that isn't a snake
+      const coordinate = notSnake[Math.floor(Math.random() * notSnake.length)];
+      this.foodCoordinate = coordinate;
+      console.log(`Food coordinates set to ${coordinate}.`);
+      return true;
+    },
+    // adds food to grid
+    insertFood() {
+      if (!this.validateGrid('insertFood')) {
+        return false;
+      }
+      if (!this.foodCoordinate) {
+        console.log(`Invalid food coordinate: ${this.foodCoordinate}`);
+        return false;
+      }
+      const x = this.foodCoordinate[0];
+      const y = this.foodCoordinate[1];
+      this.gameGrid[x][y] = 'x';
+      return true;
+    },
+    // clear and then set the game area
+    setGameArea(snake) {
+      if (!this.validateGrid('setGameArea')) {
+        return false;
+      }
+      this.clearGrid();
+      this.insertSnake(snake);
+      this.spawnFood(snake);
+      this.insertFood();
+      $('#game-area').html(this.parseGrid());
+      return true;
+    },
   };
 };
 
-// TODO: Add as grid object method
-const validateGrid = function (grid, callerName) {
-  if (Array.isArray(grid) && grid.every(Array.isArray)) {
-    return true;
-  }
-  console.log(`invalid grid at ${callerName}`);
-  return false;
-};
-
-// TODO: Add as grid object method
-// accepts a two dimension grid of string and returns html
-const parseGrid = function (grid) {
-  if (!validateGrid(grid, 'parseGrid')) {
-    console.log("Can't parse grid.");
-    return false;
-  }
-  let html = '';
-  for (let i = 0; i < grid.length; i += 1) {
-    html = `${html} <div class="grid-row">`;
-    for (let j = 0; j < grid[i].length; j += 1) {
-      html = `${html} <div class="grid-square">${grid[i][j]}</div>`;
-    }
-    html = `${html} </div>`;
-  }
-  return html;
-};
-
-// TODO: Add as grid object method
-// add snake to grid
-const insertSnake = function (grid, snake) {
-  for (let i = 0; i < snake.length(); i += 1) {
-    const x = snake.coordinates[i][0] - 1;
-    const y = grid.length - snake.coordinates[i][1] - 1;
-    grid[y][x] = 'O';
-  }
-  return grid;
-};
-
-// TODO: Add as grid object method
-const insertFood = function (grid) {
-  return grid;
-};
-
-// TODO: Rewrite with grid object methods
-// set the content of the game area
-const setGameArea = function (grid, snake) {
-  if (!validateGrid(grid, 'setGameArea')) {
-    console.log("Can't set game area");
-    return false;
-  }
-  grid = insertSnake(grid, snake);
-  grid = insertFood(grid);
-  $('#game-area').html(parseGrid(grid));
-  return true;
-};
-
-// TODO: Rewrite with grid object methods
-// adds a grid of divs on the in the #game-area
-const render = function (snake) {
-  const grid = gridFactory(40, 40);
-  validateGrid(grid, 'render');
-  if (setGameArea(grid, snake)) {
-    console.log('Game area rendered');
-  }
-};
-
+// returns snake object
 const snakeFactory = function () {
   console.log('We make snake.');
   return {
     direction: 'r',
     coordinates: [[20, 20]],
-    length() {
-      return this.coordinates.length;
+    length() { return this.coordinates.length; },
+    validateSnake(callerName) {
+      if (!Array.isArray(this.coordinates)) {
+        console.log(`Invalid snake at ${callerName}. Not an array.`);
+        return false;
+      }
+      if (!this.coordinates.every(Array.isArray)) {
+        console.log(`Invalid snake at ${callerName}. Not an array of coordinates.`);
+        return false;
+      }
+      // is every row same length?
+      if (!this.direction === 'l' || !this.direction === 'r' || !this.direction === 'u' || !this.direction === 'd') {
+        console.log(`Invalid snake at ${callerName}. ${self.direction} is not a valid direction.`);
+        return false;
+      }
+      return true;
     },
     setDirection(dir) { this.direction = dir; },
     moveRight() { this.coordinates[0][0] = this.coordinates[0][0] + 1; },
@@ -137,7 +200,8 @@ const snakeFactory = function () {
 };
 
 // watches for arrow key presses
-// if there is one sets the snake's direction
+// Sets snake's in appropriate direction
+// TODO: don't allow snake to move in direction opposite the one it is facing
 const watchForArrowKeys = function (snake) {
   const left  = 37;
   const up    = 38;
@@ -145,45 +209,39 @@ const watchForArrowKeys = function (snake) {
   const down  = 40;
     $(document).keydown(function (event) {
     switch (event.which) {
-    case left:
-      console.log('Player pressed left');
-      snake.setDirection('l');
-      break;
-    case up:
-      console.log('Player pressed up');
-      snake.setDirection('u');
-      break;
-    case right:
-      console.log('Player pressed right');
-      snake.setDirection('r');
-      break;
-    case down:
-      console.log('Player pressed down');
-      snake.setDirection('d');
-      break;
-    default:
+      case left:
+        console.log('Player pressed left');
+        snake.setDirection('l');
+        break;
+      case up:
+        console.log('Player pressed up');
+        snake.setDirection('u');
+        break;
+      case right:
+        console.log('Player pressed right');
+        snake.setDirection('r');
+        break;
+      case down:
+        console.log('Player pressed down');
+        snake.setDirection('d');
+        break;
+      default:
     }
   });
 };
 
 // cycles the game
-const turn = function (snake) {
-  let i = 0;
-  while (i < 10) {
-    setTimeout(function () {     
-      render(snake);
-      snake.move();
-    }
-      , 3000);
-    i += 1;
-  }
+const turn = function (grid, snake) {
+  grid.setGameArea(snake);
 };
 
 $(document).ready(function () {
   // make snake
+  const grid = gridFactory(40, 40);
   const snake = snakeFactory();
+  // TODO: Make game wait for command to start
   // control snake
   watchForArrowKeys(snake);
   // let's wait a second
-  turn(snake);
+  turn(grid, snake);
 });
