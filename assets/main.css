@@ -73,6 +73,6 @@ table {
 
 .grid-square {
   border: solid .5px black;
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   display: table-cell; }

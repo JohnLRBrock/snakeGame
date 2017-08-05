@@ -20,20 +20,22 @@ const gridFactory = function (width, height) {
   }
 
   // create empty grid and row
-  const grid = [];
-  const row = [];
-  // populate row with spaces
-  for (let i = 0; i < width; i += 1) {
-    row.push(' ');
-  }
-  // populate grid with rows
-  for (let i = 0; i < height; i += 1) {
-    const rowCopy = [...row];
-    grid.push(rowCopy);
-  }
+  const newGrid = function () {
+    const grid = [];
+    const row = [];
+    // populate row with spaces
+    for (let i = 0; i < width; i += 1) {
+      row.push(' ');
+    }
+    // populate grid with rows
+    for (let i = 0; i < height; i += 1) {
+      const rowCopy = [...row];
+      grid.push(rowCopy);
+    }
+    return grid;
+  };
   return {
-    gameGrid: grid,
-    emptyGrid: [...grid],
+    gameGrid: newGrid(width, height),
     foodCoordinate: false,
     height() { return this.gameGrid.length; },
     width() { return this.gameGrid[0].length; },
@@ -65,7 +67,7 @@ const gridFactory = function (width, height) {
       return true;
     },
     clearGrid() {
-      this.gameGrid = [...this.emptyGrid];
+      this.gameGrid = newGrid(width, height);
     },
     // outputs HTML representation of grid
     parseGrid() {
@@ -85,11 +87,11 @@ const gridFactory = function (width, height) {
     // adds the snake to the game area
     insertSnake(snake) {
       for (let i = 0; i < snake.length(); i += 1) {
-        const x = snake.coordinates[i][0] - 1;
-        const y = this.height() - snake.coordinates[i][1] - 1;
+        const x = snake.coordinates[i][0];
+        const y = snake.coordinates[i][1];
         this.gameGrid[y][x] = 'O';
       }
-      return grid;
+      return true;
     },
     // return false if no food needs to be spawned
     // else add food to random, non-snake, location and return true
@@ -121,6 +123,9 @@ const gridFactory = function (width, height) {
       console.log(`Food coordinates set to ${coordinate}.`);
       return true;
     },
+    removeFood() {
+      this.foodCoordinate = false;
+    },
     // adds food to grid
     insertFood() {
       if (!this.validateGrid('insertFood')) {
@@ -132,7 +137,7 @@ const gridFactory = function (width, height) {
       }
       const x = this.foodCoordinate[0];
       const y = this.foodCoordinate[1];
-      this.gameGrid[x][y] = 'x';
+      this.gameGrid[y][x] = 'x';
       return true;
     },
     // clear and then set the game area
@@ -155,7 +160,7 @@ const snakeFactory = function () {
   console.log('We make snake.');
   return {
     direction: 'r',
-    coordinates: [[20, 20]],
+    coordinates: [[0, 0]],
     length() { return this.coordinates.length; },
     validateSnake(callerName) {
       if (!Array.isArray(this.coordinates)) {
@@ -168,16 +173,19 @@ const snakeFactory = function () {
       }
       // is every row same length?
       if (!this.direction === 'l' || !this.direction === 'r' || !this.direction === 'u' || !this.direction === 'd') {
-        console.log(`Invalid snake at ${callerName}. ${self.direction} is not a valid direction.`);
+        console.log(`Invalid snake at ${callerName}. ${this.direction} is not a valid direction.`);
         return false;
       }
       return true;
+    },
+    grow() {
+
     },
     setDirection(dir) { this.direction = dir; },
     moveRight() { this.coordinates[0][0] = this.coordinates[0][0] + 1; },
     moveLeft()  { this.coordinates[0][0] = this.coordinates[0][0] - 1; },
     moveUp()    { this.coordinates[0][1] = this.coordinates[0][1] - 1; },
-    moveDown()  { this.coordinates[0][1] = this.coordinates[0][1] - 1; },
+    moveDown()  { this.coordinates[0][1] = this.coordinates[0][1] + 1; },
     move() {
       switch (this.direction) {
         case ('l'):
@@ -230,8 +238,26 @@ const watchForArrowKeys = function (snake) {
   });
 };
 
+// does the snake's head have same coordinates as the food 
+const isSnakeEatingFood = function (grid, snake) {
+  const xFood = grid.foodCoordinate[0];
+  const xSnakeHead = snake.coordinates[0][0];
+  const yFood = grid.foodCoordinate[1];
+  const ySnakeHead = snake.coordinates[0][1];
+  if (xFood === xSnakeHead && yFood === ySnakeHead) {
+    return true;
+  }
+  return false;
+};
+
 // cycles the game
 const turn = function (grid, snake) {
+  snake.move();
+  if (isSnakeEatingFood(grid, snake)) {
+    console.log('The snake ate the food');
+    grid.removeFood();
+    snake.grow();
+  }
   grid.setGameArea(snake);
 };
 
@@ -243,5 +269,5 @@ $(document).ready(function () {
   // control snake
   watchForArrowKeys(snake);
   // let's wait a second
-  turn(grid, snake);
+  setInterval(turn, 250, grid, snake);
 });
