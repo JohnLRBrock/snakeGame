@@ -73,6 +73,7 @@ $dark-purple: #36202f;
 
 /* squares that make up game-grid */
 #wrapper {
+  #title { margin-top: 5px; }
   display: flex;
   flex-direction: column;
   align-items: center;
