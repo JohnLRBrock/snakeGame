@@ -3,6 +3,19 @@
 // https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
 // TODO: Add date finished.
 
+const gridHeight = 40;
+const gridWidth = 40;
+let turnCycle;
+// change incrementSpeed to approach 0 but never reach it
+// TODO: change speed incrementing
+const turnDuration = {
+  speed: 250,
+  incrementSpeed() {
+    this.speed /= 1.1;
+    console.log(this.speed);
+  },
+};
+
 // returns grid object
 const gridFactory = function (width, height) {
   // validate inputs
@@ -89,12 +102,17 @@ const gridFactory = function (width, height) {
       for (let i = 0; i < snake.length(); i += 1) {
         const x = snake.coordinates[i][0];
         const y = snake.coordinates[i][1];
-        this.gameGrid[y][x] = 'O';
+        if (i === 0) {
+          this.gameGrid[y][x] = 'O';
+        } else {
+          this.gameGrid[y][x] = 'o';
+        }
       }
       return true;
     },
     // return false if no food needs to be spawned
     // else add food to random, non-snake, location and return true
+    // TODO: food is spawning on top of snake.
     spawnFood(snake) {
       if (!this.validateGrid('spawnFood')) {
         return false;
@@ -137,7 +155,7 @@ const gridFactory = function (width, height) {
       }
       const x = this.foodCoordinate[0];
       const y = this.foodCoordinate[1];
-      this.gameGrid[y][x] = 'x';
+      this.gameGrid[y][x] = 'X';
       return true;
     },
     // clear and then set the game area
@@ -161,7 +179,7 @@ const snakeFactory = function () {
   return {
     direction: 'r',
     lastMovedInDirection: 'r',
-    coordinates: [[20, 20], [19, 20], [18, 20]],
+    coordinates: [[20, 20], [19, 20], [18, 20], [17, 20]],
     growing: false,
     length() { return this.coordinates.length; },
     validateSnake(callerName) {
@@ -254,24 +272,73 @@ const isSnakeEatingFood = function (grid, snake) {
   return false;
 };
 
+// did the player win?
+// TODO: change win condition
+const playerWon = function (grid, snake) {
+  console.log(snake.coordinates.length, gridWidth, gridHeight);
+  if (snake.coordinates.length > (gridWidth * gridHeight) / 200) {
+    return true;
+  }
+  return false;
+};
+
+//  returns true if player loses
+const playerLost = function (grid, snake) {
+  // coordinates of the snake's head
+  const xHead = snake.coordinates[0][0];
+  const yHead = snake.coordinates[0][1];
+  const isArrayEqual = function (arr1, arr2) {
+    if (arr1.length !== arr2.length || !Array.isArray(arr1) || !Array.isArray(arr2)) {
+      return false;
+    }
+    for (let i = 0; i < arr1.length; i += 1) {
+      if (arr1[i] !== arr2[i]) { return false; }
+    }
+    return true;
+  };
+  if (xHead < 0 || xHead >= gridHeight || yHead < 0 || yHead >= gridWidth) {
+    return true;
+  }
+  for (let i = 1; i < snake.coordinates.length; i += 1) {
+    if (isArrayEqual(snake.coordinates[0], snake.coordinates[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+
 // cycles the game
 const turn = function (grid, snake) {
   snake.move();
+  if (playerWon(grid, snake)) {
+    clearInterval(turnCycle);
+    $('#game-area').html('<h1>YOU WON THE GAME!</h1>');
+    return true;
+  }
+  if (playerLost(grid, snake)) {
+    clearInterval(turnCycle);
+    $('#game-area').html('<h1>YOU LOST THE GAME!</h1>');
+    return false;
+  }
   if (isSnakeEatingFood(grid, snake)) {
     console.log('The snake ate the food');
+    turnDuration.incrementSpeed();
     grid.removeFood();
     snake.grow();
+    clearInterval(turnCycle);
+    turnCycle = setInterval(turn, turnDuration.speed, grid, snake);
   }
   grid.setGameArea(snake);
 };
 
 $(document).ready(function () {
   // make snake
-  const grid = gridFactory(40, 40);
+  const grid = gridFactory(gridWidth, gridHeight);
   const snake = snakeFactory();
   // TODO: Make game wait for command to start
   // control snake
   watchForArrowKeys(snake);
   // let's wait a second
-  setInterval(turn, 250, grid, snake);
+  turnCycle = setInterval(turn, turnDuration.speed, grid, snake);
 });
