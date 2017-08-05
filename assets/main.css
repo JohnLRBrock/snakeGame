@@ -72,7 +72,12 @@ table {
   display: table-row; }
 
 .grid-square {
-  border: solid .5px black;
   width: 18px;
   height: 18px;
   display: table-cell; }
+
+.centered {
+  text-align: center;
+}
+
+h1 { font-size: 300%; }
