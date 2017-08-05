@@ -51,6 +51,7 @@ table {
   border-spacing: 0; }
 
 /* My Code */
+/* variables */
 *, *:before, *:after {
   background-color: #36202f;
   color: #21de60; }
@@ -68,7 +69,6 @@ table {
   align-items: center;
   justify-content: center; }
   #wrapper #game-area {
-    border: solid 1px #36202f;
     display: table;
     margin: 0 auto; }
     #wrapper #game-area .grid-row {
@@ -81,6 +81,16 @@ table {
   #wrapper h1 {
     font-size: 300%;
     color: #21de60; }
+  #wrapper button {
+    background-color: #21de60;
+    border: none;
+    color: #36202f;
+    padding: 15px 32px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px; }
 
 .centered {
   text-align: center; }

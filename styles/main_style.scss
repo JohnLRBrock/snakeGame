@@ -55,9 +55,14 @@ table {
 
 /* My Code */
 
+/* variables */
+$bright-green: #21de60;
+$dark-green: #1a3d25;
+$dark-purple: #36202f;
+
 *, *:before, *:after {
-  background-color: #36202f;
-  color: #21de60;
+  background-color: $dark-purple;
+  color: $bright-green;
 }
 
 /* Box Model*/
@@ -73,7 +78,6 @@ table {
   align-items: center;
   justify-content: center;
   #game-area {
-    border: solid 1px #36202f;
     display: table;
     margin: 0 auto;
     .grid-row { 
@@ -82,15 +86,25 @@ table {
         width: 18px;
         height: 18px;
         display: table-cell;
-        background-color: #1a3d25;
+        background-color: $dark-green;
       }
     }
   }
   h1 { 
   font-size: 300%;
-  color: #21de60;
+  color: $bright-green;
   }
-  button {}
+  button {
+    background-color: $bright-green;
+    border: none;
+    color: $dark-purple;
+    padding: 15px 32px;
+    margin-top: 15px; 
+    margin-bottom: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+  }
 }
 .centered { text-align: center; }
 
