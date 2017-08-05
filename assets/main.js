@@ -160,7 +160,9 @@ const snakeFactory = function () {
   console.log('We make snake.');
   return {
     direction: 'r',
-    coordinates: [[0, 0]],
+    lastMovedInDirection: 'r',
+    coordinates: [[20, 20], [19, 20], [18, 20]],
+    growing: false,
     length() { return this.coordinates.length; },
     validateSnake(callerName) {
       if (!Array.isArray(this.coordinates)) {
@@ -179,30 +181,32 @@ const snakeFactory = function () {
       return true;
     },
     grow() {
-
+      this.growing = true;
     },
     setDirection(dir) { this.direction = dir; },
-    moveRight() { this.coordinates[0][0] = this.coordinates[0][0] + 1; },
-    moveLeft()  { this.coordinates[0][0] = this.coordinates[0][0] - 1; },
-    moveUp()    { this.coordinates[0][1] = this.coordinates[0][1] - 1; },
-    moveDown()  { this.coordinates[0][1] = this.coordinates[0][1] + 1; },
-    move() {
-      switch (this.direction) {
-        case ('l'):
-          this.moveLeft();
-          break;
-        case ('r'):
-          this.moveRight();
-          break;
-        case ('u'):
-          this.moveUp();
-          break;
-        case ('d'):
-          this.moveDown();
-          break;
-        default:
-          console.log('Invalid movement direction');
+    // adds new coordinate to front of snake in direction it's facing.
+    addHead() {
+      const newHead = {
+        l: [this.coordinates[0][0] - 1, this.coordinates[0][1]],
+        r: [this.coordinates[0][0] + 1, this.coordinates[0][1]],
+        u: [this.coordinates[0][0], this.coordinates[0][1] - 1],
+        d: [this.coordinates[0][0], this.coordinates[0][1] + 1],
+      };
+      this.coordinates.unshift(newHead[this.direction]);
+    },
+    // removes last coordinate in snake unless snake ate last turn.
+    removeTail() {
+      if (this.growing) {
+        this.growing = false;
+      } else {
+        this.coordinates.pop();
       }
+      return true;
+    },
+    move() {
+      this.lastMovedInDirection = this.direction;
+      this.addHead();
+      this.removeTail();
     },
   };
 };
@@ -219,19 +223,19 @@ const watchForArrowKeys = function (snake) {
     switch (event.which) {
       case left:
         console.log('Player pressed left');
-        snake.setDirection('l');
+        if (snake.lastMovedInDirection !== 'r') { snake.setDirection('l'); }
         break;
       case up:
         console.log('Player pressed up');
-        snake.setDirection('u');
+        if (snake.lastMovedInDirection !== 'd') { snake.setDirection('u'); }
         break;
       case right:
         console.log('Player pressed right');
-        snake.setDirection('r');
+        if (snake.lastMovedInDirection !== 'l') { snake.setDirection('r'); }
         break;
       case down:
         console.log('Player pressed down');
-        snake.setDirection('d');
+        if (snake.lastMovedInDirection !== 'u') { snake.setDirection('d'); }
         break;
       default:
     }
