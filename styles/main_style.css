@@ -3,12 +3,10 @@
 ** https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
 ** TODO: Add date finished
  */
-
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
 */
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -18,8 +16,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
   margin: 0;
@@ -27,67 +25,64 @@ time, mark, audio, video {
   border: 0;
   font-size: 100%;
   font: inherit;
-  vertical-align: baseline;
-}
+  vertical-align: baseline; }
+
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-  display: block;
-}
+  display: block; }
+
 body {
-  line-height: 1;
-}
+  line-height: 1; }
+
 ol, ul {
-  list-style: none;
-}
+  list-style: none; }
+
 blockquote, q {
-  quotes: none;
-}
+  quotes: none; }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
   content: '';
-  content: none;
-}
+  content: none; }
+
 table {
   border-collapse: collapse;
-  border-spacing: 0;
-}
+  border-spacing: 0; }
 
 /* My Code */
-
 *, *:before, *:after {
   background-color: #36202f;
-  color: #21de60;
-}
+  color: #21de60; }
 
 /* Box Model*/
-*, *:before, *:after { 
+*, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
 /* squares that make up game-grid */
-
-#game-area {
-  border: solid 1px #36202f;
-  display: table;
-  margin: 0 auto;}
-
-.grid-row { 
-  display: table-row; }
-
-.grid-square {
-  width: 18px;
-  height: 18px;
-  display: table-cell;
-  background-color: #1a3d25;
-}
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+  #wrapper #game-area {
+    border: solid 1px #36202f;
+    display: table;
+    margin: 0 auto; }
+    #wrapper #game-area .grid-row {
+      display: table-row; }
+      #wrapper #game-area .grid-row .grid-square {
+        width: 18px;
+        height: 18px;
+        display: table-cell;
+        background-color: #1a3d25; }
+  #wrapper h1 {
+    font-size: 300%;
+    color: #21de60; }
 
 .centered {
-  text-align: center;
-}
+  text-align: center; }
 
-h1 { 
-  font-size: 300%;
-  color: #21de60;
-}
+/*# sourceMappingURL=main_style.css.map */

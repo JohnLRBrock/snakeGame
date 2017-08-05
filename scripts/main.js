@@ -9,10 +9,11 @@ let turnCycle;
 // change incrementSpeed to approach 0 but never reach it
 // TODO: change speed incrementing
 const turnDuration = {
-  speed: 250,
+  baseSpeed: 25,
+  speedModifier: 200,
   incrementSpeed() {
-    this.speed /= 1.1;
-    console.log(this.speed);
+    this.speedModifier /= 1.05;
+    console.log(this.baseSpeed + this.speedModifier);
   },
 };
 
@@ -119,26 +120,13 @@ const gridFactory = function (width, height) {
       }
       // food already exists and snake hasn't eaten it.
       if (this.foodCoordinate && snake.coordinates[0] !== this.foodCoordinate) {
-        console.log('Food not spawned. Food already exists.');
         return false;
       }
       if (!snake.validateSnake('spawnFood')) {
-        console.log('Food not spawned. Invalid snake.');
         return false;
       }
-      // define array of points that isn't the snake
-      const notSnake = [];
-      for (let i = 0; i < this.height(); i += 1) {
-        for (let j = 0; j < this.width(); j += 1) {
-          if (!snake.coordinates.includes([i, j])) {
-            notSnake.push([i, j]);
-          }
-        }
-      }
-      // pick random point that isn't a snake
-      const coordinate = notSnake[Math.floor(Math.random() * notSnake.length)];
-      this.foodCoordinate = coordinate;
-      console.log(`Food coordinates set to ${coordinate}.`);
+      // pick random point for the food
+      this.foodCoordinate = [Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)];
       return true;
     },
     removeFood() {
@@ -150,7 +138,6 @@ const gridFactory = function (width, height) {
         return false;
       }
       if (!this.foodCoordinate) {
-        console.log(`Invalid food coordinate: ${this.foodCoordinate}`);
         return false;
       }
       const x = this.foodCoordinate[0];
@@ -175,7 +162,6 @@ const gridFactory = function (width, height) {
 
 // returns snake object
 const snakeFactory = function () {
-  console.log('We make snake.');
   return {
     direction: 'r',
     lastMovedInDirection: 'r',
@@ -231,7 +217,6 @@ const snakeFactory = function () {
 
 // watches for arrow key presses
 // Sets snake's in appropriate direction
-// TODO: don't allow snake to move in direction opposite the one it is facing
 const watchForArrowKeys = function (snake) {
   const left  = 37;
   const up    = 38;
@@ -273,10 +258,8 @@ const isSnakeEatingFood = function (grid, snake) {
 };
 
 // did the player win?
-// TODO: change win condition
 const playerWon = function (grid, snake) {
-  console.log(snake.coordinates.length, gridWidth, gridHeight);
-  if (snake.coordinates.length > (gridWidth * gridHeight) / 200) {
+  if (snake.coordinates.length > (gridWidth * gridHeight) / 20) {
     return true;
   }
   return false;
@@ -327,18 +310,22 @@ const turn = function (grid, snake) {
     grid.removeFood();
     snake.grow();
     clearInterval(turnCycle);
-    turnCycle = setInterval(turn, turnDuration.speed, grid, snake);
+    turnCycle = setInterval(turn, turnDuration.baseSpeed + turnDuration.speedModifier, grid, snake);
   }
   grid.setGameArea(snake);
 };
 
-$(document).ready(function () {
-  // make snake
+const newGame = function () {
   const grid = gridFactory(gridWidth, gridHeight);
   const snake = snakeFactory();
-  // TODO: Make game wait for command to start
   // control snake
   watchForArrowKeys(snake);
   // let's wait a second
-  turnCycle = setInterval(turn, turnDuration.speed, grid, snake);
+  turnCycle = setInterval(turn, turnDuration.baseSpeed + turnDuration.speedModifier, grid, snake);
+};
+
+$(document).ready(function () {
+  $("button").click(function (event) {
+    newGame();
+    });
 });
