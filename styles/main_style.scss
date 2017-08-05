@@ -59,6 +59,9 @@ table {
 $bright-green: #21de60;
 $dark-green: #1a3d25;
 $dark-purple: #36202f;
+$snake-head: darkgreen;
+$snake-body: green;
+$food: #d500ff;
 
 *, *:before, *:after {
   background-color: $dark-purple;
@@ -89,6 +92,9 @@ $dark-purple: #36202f;
         display: table-cell;
         background-color: $dark-green;
       }
+      .snake-head { background-color: $snake-head;}
+      .snake-body { background-color: $snake-body;}
+      .food { background-color: $food;}
     }
   }
   h1 { 

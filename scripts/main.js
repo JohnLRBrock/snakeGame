@@ -92,7 +92,22 @@ const gridFactory = function (width, height) {
       for (let i = 0; i < this.height(); i += 1) {
         html = `${html} <div class="grid-row">`;
         for (let j = 0; j < this.width(); j += 1) {
-          html = `${html} <div class="grid-square">${this.gameGrid[i][j]}</div>`;
+          switch (this.gameGrid[i][j]) {
+            case 'O':
+              html = `${html} <div class="grid-square snake-head"></div>`;
+              console.log('added snake head');
+              break;
+            case 'o':
+              html = `${html} <div class="grid-square snake-body"></div>`;
+              console.log('added snake body');
+              break;
+            case 'X':
+              html = `${html} <div class="grid-square food"></div>`;
+              console.log('added food');
+              break;
+            default:
+              html = `${html} <div class="grid-square"></div>`;
+          }
         }
         html = `${html} </div>`;
       }

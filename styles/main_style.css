@@ -80,6 +80,12 @@ table {
         height: 18px;
         display: table-cell;
         background-color: #1a3d25; }
+      #wrapper #game-area .grid-row .snake-head {
+        background-color: darkgreen; }
+      #wrapper #game-area .grid-row .snake-body {
+        background-color: green; }
+      #wrapper #game-area .grid-row .food {
+        background-color: #d500ff; }
   #wrapper h1 {
     font-size: 300%;
     color: #21de60; }
