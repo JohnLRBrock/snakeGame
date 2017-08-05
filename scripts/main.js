@@ -326,6 +326,7 @@ const newGame = function () {
 
 $(document).ready(function () {
   $("button").click(function (event) {
+    clearInterval(turnCycle);
     newGame();
     });
 });
