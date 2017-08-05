@@ -55,6 +55,11 @@ table {
 
 /* My Code */
 
+*, *:before, *:after {
+  background-color: #36202f;
+  color: #21de60;
+}
+
 /* Box Model*/
 *, *:before, *:after { 
   -moz-box-sizing: border-box;
@@ -64,7 +69,7 @@ table {
 /* squares that make up game-grid */
 
 #game-area {
-  border: solid 1px black;
+  border: solid 1px #36202f;
   display: table;
   margin: 0 auto;}
 
@@ -74,10 +79,15 @@ table {
 .grid-square {
   width: 18px;
   height: 18px;
-  display: table-cell; }
+  display: table-cell;
+  background-color: #1a3d25;
+}
 
 .centered {
   text-align: center;
 }
 
-h1 { font-size: 300%; }
+h1 { 
+  font-size: 300%;
+  color: #21de60;
+}
