@@ -55,17 +55,11 @@ table {
 
 /* My Code */
 
-/* variables */
-$bright-green: #21de60;
-$dark-green: #1a3d25;
-$dark-purple: #36202f;
-$snake-head: darkgreen;
-$snake-body: green;
-$food: #d500ff;
+/* Insert colors */
+@import 'color';
 
 *, *:before, *:after {
-  background-color: $dark-purple;
-  color: $bright-green;
+  background-color: $background;
 }
 
 /* Box Model*/
@@ -84,17 +78,22 @@ $food: #d500ff;
   #game-area {
     display: table;
     margin: 0 auto;
+    background-color: $game-area;
     .grid-row { 
       display: table-row;
       .grid-square {
         width: 18px;
         height: 18px;
         display: table-cell;
-        background-color: $dark-green;
+        background-color: $game_area;
       }
       .snake-head { background-color: $snake-head;}
       .snake-body { background-color: $snake-body;}
-      .food { background-color: $food;}
+      .food { 
+        background-color: $food;
+        border-radius: 100%;
+        border: 1px solid $brown;
+      }
     }
   }
   h1 { 
@@ -104,7 +103,7 @@ $food: #d500ff;
   button {
     background-color: $bright-green;
     border: none;
-    color: $dark-purple;
+    color: $neutral;
     padding: 15px 32px;
     margin-top: 15px; 
     margin-bottom: 10px;

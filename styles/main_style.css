@@ -51,10 +51,9 @@ table {
   border-spacing: 0; }
 
 /* My Code */
-/* variables */
+/* Insert colors */
 *, *:before, *:after {
-  background-color: #36202f;
-  color: #21de60; }
+  background-color: #493F0B; }
 
 /* Box Model*/
 *, *:before, *:after {
@@ -72,27 +71,30 @@ table {
     margin-top: 5px; }
   #wrapper #game-area {
     display: table;
-    margin: 0 auto; }
+    margin: 0 auto;
+    background-color: #F5F6D4; }
     #wrapper #game-area .grid-row {
       display: table-row; }
       #wrapper #game-area .grid-row .grid-square {
         width: 18px;
         height: 18px;
         display: table-cell;
-        background-color: #1a3d25; }
+        background-color: #F5F6D4; }
       #wrapper #game-area .grid-row .snake-head {
-        background-color: darkgreen; }
+        background-color: #85DB18; }
       #wrapper #game-area .grid-row .snake-body {
-        background-color: green; }
+        background-color: #CDE855; }
       #wrapper #game-area .grid-row .food {
-        background-color: #d500ff; }
+        background-color: #A7C520;
+        border-radius: 100%;
+        border: 1px solid #493F0B; }
   #wrapper h1 {
     font-size: 300%;
-    color: #21de60; }
+    color: #85DB18; }
   #wrapper button {
-    background-color: #21de60;
+    background-color: #85DB18;
     border: none;
-    color: #36202f;
+    color: #F5F6D4;
     padding: 15px 32px;
     margin-top: 15px;
     margin-bottom: 10px;
