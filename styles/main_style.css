@@ -86,8 +86,7 @@ table {
         background-color: #CDE855; }
       #wrapper #game-area .grid-row .food {
         background-color: #A7C520;
-        border-radius: 100%;
-        border: 1px solid #493F0B; }
+        border-radius: 100%; }
   #wrapper h1 {
     font-size: 300%;
     color: #85DB18; }
