@@ -1,13 +1,13 @@
 // John Brock
 // Snake.js
 // https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
-// TODO: Add date finished.
+// 2017-08-08
 
 const gridHeight = 40;
 const gridWidth = 40;
 let turnCycle;
 // change incrementSpeed to approach 0 but never reach it
-// TODO: change speed incrementing
+// TODO: fix so speed doesn't carry over to new games
 const turnDuration = {
   baseSpeed: 25,
   speedModifier: 200,
@@ -50,10 +50,12 @@ const gridFactory = function (width, height) {
   };
   return {
     gameGrid: newGrid(width, height),
+    // when food is on grid this variable will be an array containing an x and y coordinate.
     foodCoordinate: false,
     height() { return this.gameGrid.length; },
     width() { return this.gameGrid[0].length; },
 
+    // prints error message and returns false if called from an invalid grid
     validateGrid(callerName) {
       if (!Array.isArray(this.gameGrid)) {
         console.log(`Invalid gameGrid at ${callerName}. Not an array.`);
@@ -126,9 +128,153 @@ const gridFactory = function (width, height) {
       }
       return true;
     },
+
+    // food related methods
+
+    // A grid object, in this project, is an array of rows.
+    // Each row, representing a Y value, is an array of x values.
+    // This function accepts a value for it's origin and it's dimensions.
+    // It's origin is the point furthest to the bottom left. (Y axis is flipped)
+    // The returned grid is a square.
+    newArrayGrid(xOrigin, yOrigin, n) {
+      if (!Number.isInteger(xOrigin)) {
+        console.log(`xOrigin in newArrayGrid is not an integer: ${xOrigin}`);
+        return false;
+      }
+      if (!Number.isInteger(yOrigin)) {
+        console.log(`yOrigin in newArrayGrid is not an integer: ${yOrigin}`);
+        return false;
+      }
+      if (!n) {
+        console.log(`n in newArrayGrid is not an integer: ${n}`);
+        return false;
+      }
+      const foodGrid = [];
+      const distance = (2 * n);
+      for (let x = xOrigin; x < xOrigin + distance; x += 1) {
+        for (let y = yOrigin; y < yOrigin + distance; y += 1) {
+          if (x > this.width() - 1 || x < 0) {
+            console.log(`newArrayGrid tried to make grid with the illegal x coordinate: ${x}`);
+            console.log(`Origin coordinates were [${xOrigin},${yOrigin}]`);
+            return false;
+          }
+          if (y > this.height() - 1 || y < 0) {
+            console.log(`newArrayGrid tried to make grid with an illegal y coordinate: ${y}`);
+            console.log(`Origin coordinates were [${xOrigin},${yOrigin}]`);
+            return false;
+          }
+          foodGrid.push([x, y]);
+        }
+      }
+      return foodGrid;
+    },
+
+    // is the snake too close to any edge to draw a grid from its position?
+    // is x too close to the min value
+    isCloseToLeft(xSnakeHead, n) {
+      if (xSnakeHead - n < 0) {
+        console.log('The snake is close to the left edge of the grid');
+        return true;
+      }
+      return false;
+    },
+    // is x too close to the max value
+    isCloseToRight(xSnakeHead, n) {
+      if (xSnakeHead + (n * 2) > this.width() - 1) {
+        console.log('The snake is close to the right edge of the grid');
+        return true;
+      }
+      return false;
+    },
+    // is y too close to the min value
+    isCloseToTop(ySnakeHead, n) {
+      if (ySnakeHead - n < 0) {
+        console.log('The snake is close to the top edge of the grid');
+        return true;
+      }
+      return false;
+    },
+    // is y too close to the max value
+    isCloseToBot(ySnakeHead, n) {
+      if (ySnakeHead + (2 * n) > this.height() - 1) {
+        console.log('The snake is close to the bottom edge of the grid');
+        return true;
+      }
+      return false;
+    },
+
+    // returns array of coordinates n units around snake
+    nUnitsAroundSnake(xSnakeHead, ySnakeHead, n) {
+      // top left corner is (0,0)
+      if (this.isCloseToTop(ySnakeHead, n)) {
+        if (this.isCloseToLeft(xSnakeHead, n)) {
+          return this.newArrayGrid(0, 0, n);
+        }
+        if (this.isCloseToRight(xSnakeHead, n)) {
+          return this.newArrayGrid(this.width() - (n * 2), 0, n);
+        }
+        return this.newArrayGrid(0, ySnakeHead, n);
+      }
+
+      if (this.isCloseToBot(ySnakeHead, n)) {
+        if (this.isCloseToLeft(xSnakeHead, n)) {
+          return this.newArrayGrid(0, this.height() - (n * 2), n);
+        }
+        if (this.isCloseToRight(xSnakeHead, n)) {
+          return this.newArrayGrid(this.width() - (n * 2), this.height() - (n * 2), n);
+        }
+        return this.newArrayGrid(xSnakeHead, this.height() - (n * 2), n);
+      }
+
+      if (this.isCloseToLeft(xSnakeHead, n)) {
+        return this.newArrayGrid(0, ySnakeHead - n, n);
+      }
+      if (this.isCloseToRight(xSnakeHead, n)) {
+        return this.newArrayGrid(this.width() - (n * 2), ySnakeHead, n);
+      }
+      // default condition
+      return this.newArrayGrid(xSnakeHead - n, ySnakeHead - n, n);
+    },
+
+    sameCoordinates(coord1, coord2) {
+      for (let i = 0; i < coord1.length; i += 1) {
+        if (coord1[i] !== coord2[i]) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+    // accepts an array of arrays of coordinate points and a snake
+    // removes all coordinates from the arrays that also belong to the snake
+    noStepOnSnek(arrGrid, snakeCoordinates) {
+      if (!Array.isArray(arrGrid)) {
+        console.log(`arrGrid in noStepOnSnek is not an array: ${arrGrid}`);
+        return false;
+      }
+      if (!Array.isArray(snakeCoordinates)) {
+        console.log(`snakeCoordinates in noStepOnSnek is not an array: ${snakeCoordinates}`);
+        return false;
+      }
+      const returnGrid = [];
+      for (let i = 0; i < arrGrid.length; i += 1) {
+        let inSnake = false;
+        for (let j = 0; j < snakeCoordinates.length; j += 1) {
+          if (this.sameCoordinates(arrGrid[i], snakeCoordinates[j])) {
+            inSnake = true;
+          }
+        }
+        // if coordinates are in grid but not in snake add to new grid
+        if (!inSnake) {
+          returnGrid.push([arrGrid[i][0], arrGrid[i][1]]);
+          inSnake = false;
+        }
+      }
+      return returnGrid;
+    },
+
     // return false if no food needs to be spawned
     // else add food to random, non-snake, location and return true
-    // TODO: food is spawning on top of snake.
     spawnFood(snake) {
       if (!this.validateGrid('spawnFood')) {
         return false;
@@ -140,10 +286,23 @@ const gridFactory = function (width, height) {
       if (!snake.validateSnake('spawnFood')) {
         return false;
       }
+
+      const averageGameGridDimension = Math.floor((this.width() + this.height()) / 2);
+      let arrGrid;
+      if (snake.length() * 2 < this.width()) {
+        arrGrid = this.nUnitsAroundSnake(snake.coordinates[0][0], snake.coordinates[0][1],
+          snake.length());
+      } else {
+        arrGrid = this.newArrayGrid(0, 0, averageGameGridDimension / 2);
+      }
+      const snakelessGrid = this.noStepOnSnek(arrGrid, snake.coordinates);
       // pick random point for the food
-      this.foodCoordinate = [Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)];
+      this.foodCoordinate = [...snakelessGrid[Math.floor(Math.random() * snakelessGrid.length)]];
+      console.log(this.foodCoordinate);
       return true;
     },
+
+
     removeFood() {
       this.foodCoordinate = false;
     },
