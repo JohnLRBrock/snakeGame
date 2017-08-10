@@ -3,6 +3,11 @@
 // https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
 // 2017-08-08
 
+// TODO: Crib style from https://afuh.github.io/snake-game/
+// TODO: add score
+// TODO: mess with speed function
+// TODO: add WASD support
+
 const gridHeight = 40;
 const gridWidth = 40;
 let turnCycle;
