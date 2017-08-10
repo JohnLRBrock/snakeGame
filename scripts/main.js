@@ -7,13 +7,13 @@ const gridHeight = 40;
 const gridWidth = 40;
 let turnCycle;
 // change incrementSpeed to approach 0 but never reach it
-// TODO: fix so speed doesn't carry over to new games
 const turnDuration = {
-  baseSpeed: 25,
-  speedModifier: 200,
   incrementSpeed() {
     this.speedModifier /= 1.05;
-    console.log(this.baseSpeed + this.speedModifier);
+  },
+  reset() {
+    this.baseSpeed = 25;
+    this.speedModifier = 200;
   },
 };
 
@@ -97,15 +97,12 @@ const gridFactory = function (width, height) {
           switch (this.gameGrid[i][j]) {
             case 'O':
               html = `${html} <div class="grid-square snake-head"></div>`;
-              console.log('added snake head');
               break;
             case 'o':
               html = `${html} <div class="grid-square snake-body"></div>`;
-              console.log('added snake body');
               break;
             case 'X':
               html = `${html} <div class="grid-square food"></div>`;
-              console.log('added food');
               break;
             default:
               html = `${html} <div class="grid-square"></div>`;
@@ -173,7 +170,6 @@ const gridFactory = function (width, height) {
     // is x too close to the min value
     isCloseToLeft(xSnakeHead, n) {
       if (xSnakeHead - n < 0) {
-        console.log('The snake is close to the left edge of the grid');
         return true;
       }
       return false;
@@ -181,7 +177,6 @@ const gridFactory = function (width, height) {
     // is x too close to the max value
     isCloseToRight(xSnakeHead, n) {
       if (xSnakeHead + (n * 2) > this.width() - 1) {
-        console.log('The snake is close to the right edge of the grid');
         return true;
       }
       return false;
@@ -189,7 +184,6 @@ const gridFactory = function (width, height) {
     // is y too close to the min value
     isCloseToTop(ySnakeHead, n) {
       if (ySnakeHead - n < 0) {
-        console.log('The snake is close to the top edge of the grid');
         return true;
       }
       return false;
@@ -197,7 +191,6 @@ const gridFactory = function (width, height) {
     // is y too close to the max value
     isCloseToBot(ySnakeHead, n) {
       if (ySnakeHead + (2 * n) > this.height() - 1) {
-        console.log('The snake is close to the bottom edge of the grid');
         return true;
       }
       return false;
@@ -298,7 +291,6 @@ const gridFactory = function (width, height) {
       const snakelessGrid = this.noStepOnSnek(arrGrid, snake.coordinates);
       // pick random point for the food
       this.foodCoordinate = [...snakelessGrid[Math.floor(Math.random() * snakelessGrid.length)]];
-      console.log(this.foodCoordinate);
       return true;
     },
 
@@ -339,6 +331,7 @@ const snakeFactory = function () {
   return {
     direction: 'r',
     lastMovedInDirection: 'r',
+    directionInstructions: [],
     coordinates: [[20, 20], [19, 20], [18, 20], [17, 20]],
     growing: false,
     length() { return this.coordinates.length; },
@@ -361,7 +354,47 @@ const snakeFactory = function () {
     grow() {
       this.growing = true;
     },
-    setDirection(dir) { this.direction = dir; },
+    setDirection() {
+      const instructions = this.directionInstructions.length;
+      if (instructions > 0) {
+        switch (this.lastMovedInDirection) { 
+          case 'l':
+            if (this.directionInstructions[0] !== 'r') {
+              this.direction = this.directionInstructions[0];
+            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+            break;
+          case 'r':
+            if (this.directionInstructions[0] !== 'l') {
+              this.direction = this.directionInstructions[0];
+            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+            break;
+          case 'u':
+            if (this.directionInstructions[0] !== 'd') {
+              this.direction = this.directionInstructions[0];
+            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+            break;
+          case 'd':
+            if (this.directionInstructions[0] !== 'u') {
+              this.direction = this.directionInstructions[0];
+            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+            break;
+          default:
+        }
+      }
+    },
+    addDirectionInstruction(dir) {
+      if (this.directionInstructions.includes(dir)) {
+        return false;
+      }
+      this.directionInstructions.unshift(dir);
+      this.setDirection();
+      return true;
+    },
+    removeDirectionInstuciton(dir) {
+      const index = this.directionInstructions.indexOf(dir);
+      this.directionInstructions.splice(index, 1);
+      this.setDirection();
+    },
     // adds new coordinate to front of snake in direction it's facing.
     addHead() {
       const newHead = {
@@ -399,20 +432,33 @@ const watchForArrowKeys = function (snake) {
     $(document).keydown(function (event) {
     switch (event.which) {
       case left:
-        console.log('Player pressed left');
-        if (snake.lastMovedInDirection !== 'r') { snake.setDirection('l'); }
+        snake.addDirectionInstruction('l');
         break;
       case up:
-        console.log('Player pressed up');
-        if (snake.lastMovedInDirection !== 'd') { snake.setDirection('u'); }
+        snake.addDirectionInstruction('u');
         break;
       case right:
-        console.log('Player pressed right');
-        if (snake.lastMovedInDirection !== 'l') { snake.setDirection('r'); }
+        snake.addDirectionInstruction('r');
         break;
       case down:
-        console.log('Player pressed down');
-        if (snake.lastMovedInDirection !== 'u') { snake.setDirection('d'); }
+        snake.addDirectionInstruction('d');
+        break;
+      default:
+    }
+  });
+    $(document).keyup(function (event) {
+    switch (event.which) {
+      case left:
+        snake.removeDirectionInstuciton('l');
+        break;
+      case up:
+        snake.removeDirectionInstuciton('u');
+        break;
+      case right:
+        snake.removeDirectionInstuciton('r');
+        break;
+      case down:
+        snake.removeDirectionInstuciton('d');
         break;
       default:
     }
@@ -499,8 +545,9 @@ const newGame = function () {
 };
 
 $(document).ready(function () {
-  $("button").click(function (event) {
+  $('button').click(function (event) {
     clearInterval(turnCycle);
+    turnDuration.reset();
     newGame();
-    });
+  });
 });
