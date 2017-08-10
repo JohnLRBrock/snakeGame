@@ -7,6 +7,7 @@
 // TODO: add score
 // TODO: mess with speed function
 // TODO: add WASD support
+// TODO: Use preventDefault() to stop arrow keys from moving screen up and down.
 
 const gridHeight = 40;
 const gridWidth = 40;
