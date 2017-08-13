@@ -8,6 +8,8 @@
 // TODO: mess with speed function
 // TODO: add WASD support
 // TODO: Use preventDefault() to stop arrow keys from moving screen up and down.
+// TODO: Change to flex Grid
+// TODO: Check how it looks on different screen sizes, especially 1200X800
 
 const gridHeight = 40;
 const gridWidth = 40;
