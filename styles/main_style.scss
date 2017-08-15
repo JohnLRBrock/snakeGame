@@ -85,13 +85,11 @@ table {
         width: 18px;
         height: 18px;
         display: table-cell;
-        background-color: $game_area;
       }
       .snake-head { background-color: $snake-head;}
       .snake-body { background-color: $snake-body;}
       .food { 
         background-color: $food;
-        border-radius: 100%;
       }
     }
   }

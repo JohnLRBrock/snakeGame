@@ -78,15 +78,13 @@ table {
       #wrapper #game-area .grid-row .grid-square {
         width: 18px;
         height: 18px;
-        display: table-cell;
-        background-color: #F5F6D4; }
+        display: table-cell; }
       #wrapper #game-area .grid-row .snake-head {
         background-color: #85DB18; }
       #wrapper #game-area .grid-row .snake-body {
         background-color: #CDE855; }
       #wrapper #game-area .grid-row .food {
-        background-color: #A7C520;
-        border-radius: 100%; }
+        background-color: #A7C520; }
   #wrapper h1 {
     font-size: 300%;
     color: #85DB18; }
