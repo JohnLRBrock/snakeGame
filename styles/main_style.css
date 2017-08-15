@@ -71,14 +71,14 @@ table {
     margin-top: 5px; }
   #wrapper #game-area {
     display: table;
-    margin: 0 auto;
-    background-color: #F5F6D4; }
+    margin: 0 auto; }
     #wrapper #game-area .grid-row {
       display: table-row; }
       #wrapper #game-area .grid-row .grid-square {
         width: 18px;
         height: 18px;
-        display: table-cell; }
+        display: table-cell;
+        background-color: #F5F6D4; }
       #wrapper #game-area .grid-row .snake-head {
         background-color: #85DB18; }
       #wrapper #game-area .grid-row .snake-body {

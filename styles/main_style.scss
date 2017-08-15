@@ -78,13 +78,13 @@ table {
   #game-area {
     display: table;
     margin: 0 auto;
-    background-color: $game-area;
     .grid-row { 
       display: table-row;
       .grid-square {
         width: 18px;
         height: 18px;
         display: table-cell;
+        background-color: $game-area;
       }
       .snake-head { background-color: $snake-head;}
       .snake-body { background-color: $snake-body;}
