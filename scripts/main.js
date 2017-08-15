@@ -3,10 +3,10 @@
 // https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
 // 2017-08-08
 
-// TODO: Crib style from https://afuh.github.io/snake-game/
-// TODO: add score
-// TODO: mess with speed function
 // TODO: add WASD support
+// TODO: add score
+// TODO: Crib style from https://afuh.github.io/snake-game/
+// TODO: mess with speed function
 // TODO: Use preventDefault() to stop arrow keys from moving screen up and down.
 // TODO: Change to flex Grid
 // TODO: Check how it looks on different screen sizes, especially 1200X800
@@ -337,8 +337,8 @@ const gridFactory = function (width, height) {
 // returns snake object
 const snakeFactory = function () {
   return {
-    direction: 'r',
-    lastMovedInDirection: 'r',
+    direction: 'rightArrow',
+    lastMovedInDirection: 'rightArrow',
     directionInstructions: [],
     coordinates: [[20, 20], [19, 20], [18, 20], [17, 20]],
     growing: false,
@@ -353,7 +353,8 @@ const snakeFactory = function () {
         return false;
       }
       // is every row same length?
-      if (!this.direction === 'l' || !this.direction === 'r' || !this.direction === 'u' || !this.direction === 'd') {
+      if (!this.direction === 'leftArrow' || !this.direction === 'rightArrow' || !this.direction === 'upArrow' || !this.direction === 'downArrow' ||
+          !this.direction === 'leftA' || !this.direction === 'RightD' || !this.direction === 'upW' || !this.direction === 'downS') {
         console.log(`Invalid snake at ${callerName}. ${this.direction} is not a valid direction.`);
         return false;
       }
@@ -363,28 +364,44 @@ const snakeFactory = function () {
       this.growing = true;
     },
     setDirection() {
-      const instructions = this.directionInstructions.length;
-      if (instructions > 0) {
-        switch (this.lastMovedInDirection) { 
-          case 'l':
-            if (this.directionInstructions[0] !== 'r') {
-              this.direction = this.directionInstructions[0];
-            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+      if (this.directionInstructions.length > 0) {
+        switch (this.lastMovedInDirection) {
+          // change this to use a loop to check through all instructions
+          case 'leftArrow':
+          case 'leftA':
+            for (let i = 0; i < this.directionInstructions.length; i += 1) {
+              if (this.directionInstructions[i] !== 'rightArrow' && this.directionInstructions[i] !== 'RightD') {
+                this.direction = this.directionInstructions[i];
+                break;
+              }
+            }
             break;
-          case 'r':
-            if (this.directionInstructions[0] !== 'l') {
-              this.direction = this.directionInstructions[0];
-            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+          case 'rightArrow':
+          case 'RightD':
+            for (let i = 0; i < this.directionInstructions.length; i += 1) {
+              if (this.directionInstructions[i] !== 'leftArrow' && this.directionInstructions[i] !== 'leftA') {
+                this.direction = this.directionInstructions[i];
+                break;
+              }
+            }
             break;
-          case 'u':
-            if (this.directionInstructions[0] !== 'd') {
-              this.direction = this.directionInstructions[0];
-            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+          case 'upArrow':
+          case 'upW':
+            for (let i = 0; i < this.directionInstructions.length; i += 1) {
+              if (this.directionInstructions[i] !== 'downArrow' && this.directionInstructions[i] !== 'downS') {
+                this.direction = this.directionInstructions[i];
+                break;
+              }
+            }
             break;
-          case 'd':
-            if (this.directionInstructions[0] !== 'u') {
-              this.direction = this.directionInstructions[0];
-            } else if (instructions > 1) { this.direction = this.directionInstructions[1]; }
+          case 'downArrow':
+          case 'downS':
+            for (let i = 0; i < this.directionInstructions.length; i += 1) {
+              if (this.directionInstructions[i] !== 'upArrow' && this.directionInstructions[i] !== 'upW') {
+                this.direction = this.directionInstructions[i];
+                break;
+              }
+            }
             break;
           default:
         }
@@ -405,13 +422,27 @@ const snakeFactory = function () {
     },
     // adds new coordinate to front of snake in direction it's facing.
     addHead() {
-      const newHead = {
-        l: [this.coordinates[0][0] - 1, this.coordinates[0][1]],
-        r: [this.coordinates[0][0] + 1, this.coordinates[0][1]],
-        u: [this.coordinates[0][0], this.coordinates[0][1] - 1],
-        d: [this.coordinates[0][0], this.coordinates[0][1] + 1],
-      };
-      this.coordinates.unshift(newHead[this.direction]);
+      let newHead;
+      switch (this.direction) {
+        case 'leftA':
+        case 'leftArrow':
+          newHead = [this.coordinates[0][0] - 1, this.coordinates[0][1]];
+          break;
+        case 'RightD':
+        case 'rightArrow':
+          newHead = [this.coordinates[0][0] + 1, this.coordinates[0][1]];
+          break;
+        case 'upW':
+        case 'upArrow':
+          newHead = [this.coordinates[0][0], this.coordinates[0][1] - 1];
+          break;
+        case 'downS': 
+        case 'downArrow':
+          newHead = [this.coordinates[0][0], this.coordinates[0][1] + 1];
+          break;
+        default:
+        }
+      this.coordinates.unshift(newHead);
     },
     // removes last coordinate in snake unless snake ate last turn.
     removeTail() {
@@ -437,19 +468,36 @@ const watchForArrowKeys = function (snake) {
   const up    = 38;
   const right = 39;
   const down  = 40;
+  const w     = 87;
+  const a     = 65;
+  const s     = 83;
+  const d     = 68;
+
     $(document).keydown(function (event) {
     switch (event.which) {
       case left:
-        snake.addDirectionInstruction('l');
+        snake.addDirectionInstruction('leftArrow');
         break;
       case up:
-        snake.addDirectionInstruction('u');
+        snake.addDirectionInstruction('upArrow');
         break;
       case right:
-        snake.addDirectionInstruction('r');
+        snake.addDirectionInstruction('rightArrow');
         break;
       case down:
-        snake.addDirectionInstruction('d');
+        snake.addDirectionInstruction('downArrow');
+        break;
+      case a:
+        snake.addDirectionInstruction('leftA');
+        break;
+      case w:
+        snake.addDirectionInstruction('upW');
+        break;
+      case d:
+        snake.addDirectionInstruction('RightD');
+        break;
+      case s:
+        snake.addDirectionInstruction('downS');
         break;
       default:
     }
@@ -457,18 +505,30 @@ const watchForArrowKeys = function (snake) {
     $(document).keyup(function (event) {
     switch (event.which) {
       case left:
-        snake.removeDirectionInstuciton('l');
+        snake.removeDirectionInstuciton('leftArrow');
         break;
       case up:
-        snake.removeDirectionInstuciton('u');
+        snake.removeDirectionInstuciton('upArrow');
         break;
       case right:
-        snake.removeDirectionInstuciton('r');
+        snake.removeDirectionInstuciton('rightArrow');
         break;
       case down:
-        snake.removeDirectionInstuciton('d');
+        snake.removeDirectionInstuciton('downArrow');
         break;
-      default:
+      case a:
+        snake.removeDirectionInstuciton('leftA');
+        break;
+      case w:
+        snake.removeDirectionInstuciton('upW');
+        break;
+      case d:
+        snake.removeDirectionInstuciton('RightD');
+        break;
+      case s:
+        snake.removeDirectionInstuciton('downS');
+        break;
+
     }
   });
 };
@@ -533,7 +593,6 @@ const turn = function (grid, snake) {
     return false;
   }
   if (isSnakeEatingFood(grid, snake)) {
-    console.log('The snake ate the food');
     turnDuration.incrementSpeed();
     grid.removeFood();
     snake.grow();
