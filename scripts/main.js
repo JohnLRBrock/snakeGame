@@ -3,13 +3,13 @@
 // https://www.theodinproject.com/courses/javascript-and-jquery/lessons/jquery-and-the-dom?ref=lc-pb
 // 2017-08-08
 
-// TODO: add WASD support
 // TODO: add score
 // TODO: Crib style from https://afuh.github.io/snake-game/
 // TODO: mess with speed function
 // TODO: Use preventDefault() to stop arrow keys from moving screen up and down.
 // TODO: Change to flex Grid
 // TODO: Check how it looks on different screen sizes, especially 1200X800
+// TODO: add support for internet explorer.
 
 const gridHeight = 40;
 const gridWidth = 40;
