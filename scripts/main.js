@@ -10,6 +10,8 @@
 // TODO: Change to flex Grid
 // TODO: Check how it looks on different screen sizes, especially 1200X800
 // TODO: add support for internet explorer.
+// TODO: Game start on click instead of button press.
+// TODO: Create testing suite and remove console.logs
 
 const gridHeight = 40;
 const gridWidth = 40;
@@ -436,12 +438,12 @@ const snakeFactory = function () {
         case 'upArrow':
           newHead = [this.coordinates[0][0], this.coordinates[0][1] - 1];
           break;
-        case 'downS': 
+        case 'downS':
         case 'downArrow':
           newHead = [this.coordinates[0][0], this.coordinates[0][1] + 1];
           break;
         default:
-        }
+      }
       this.coordinates.unshift(newHead);
     },
     // removes last coordinate in snake unless snake ate last turn.
@@ -463,17 +465,17 @@ const snakeFactory = function () {
 
 // watches for arrow key presses
 // Sets snake's in appropriate direction
-const watchForArrowKeys = function (snake) {
-  const left  = 37;
-  const up    = 38;
+const watchForArrowKeys = (snake) => {
+  const left = 37;
+  const up = 38;
   const right = 39;
-  const down  = 40;
-  const w     = 87;
-  const a     = 65;
-  const s     = 83;
-  const d     = 68;
+  const down = 40;
+  const w = 87;
+  const a = 65;
+  const s = 83;
+  const d = 68;
 
-    $(document).keydown(function (event) {
+  $(document).keydown((event) => {
     switch (event.which) {
       case left:
         snake.addDirectionInstruction('leftArrow');
@@ -502,7 +504,7 @@ const watchForArrowKeys = function (snake) {
       default:
     }
   });
-    $(document).keyup(function (event) {
+  $(document).keyup((event) => {
     switch (event.which) {
       case left:
         snake.removeDirectionInstuciton('leftArrow');
@@ -528,13 +530,13 @@ const watchForArrowKeys = function (snake) {
       case s:
         snake.removeDirectionInstuciton('downS');
         break;
-
+      default:
     }
   });
 };
 
 // does the snake's head have same coordinates as the food 
-const isSnakeEatingFood = function (grid, snake) {
+const isSnakeEatingFood = (grid, snake) => {
   const xFood = grid.foodCoordinate[0];
   const xSnakeHead = snake.coordinates[0][0];
   const yFood = grid.foodCoordinate[1];
@@ -546,7 +548,7 @@ const isSnakeEatingFood = function (grid, snake) {
 };
 
 // did the player win?
-const playerWon = function (grid, snake) {
+const playerWon = (grid, snake) => {
   if (snake.coordinates.length > (gridWidth * gridHeight) / 20) {
     return true;
   }
@@ -554,11 +556,11 @@ const playerWon = function (grid, snake) {
 };
 
 //  returns true if player loses
-const playerLost = function (grid, snake) {
+const playerLost = (grid, snake) => {
   // coordinates of the snake's head
   const xHead = snake.coordinates[0][0];
   const yHead = snake.coordinates[0][1];
-  const isArrayEqual = function (arr1, arr2) {
+  const isArrayEqual = (arr1, arr2) => {
     if (arr1.length !== arr2.length || !Array.isArray(arr1) || !Array.isArray(arr2)) {
       return false;
     }
@@ -580,7 +582,7 @@ const playerLost = function (grid, snake) {
 
 
 // cycles the game
-const turn = function (grid, snake) {
+const turn = (grid, snake) => {
   snake.move();
   if (playerWon(grid, snake)) {
     clearInterval(turnCycle);
@@ -599,10 +601,10 @@ const turn = function (grid, snake) {
     clearInterval(turnCycle);
     turnCycle = setInterval(turn, turnDuration.baseSpeed + turnDuration.speedModifier, grid, snake);
   }
-  grid.setGameArea(snake);
+  return grid.setGameArea(snake);
 };
 
-const newGame = function () {
+const newGame = () => {
   const grid = gridFactory(gridWidth, gridHeight);
   const snake = snakeFactory();
   // control snake
@@ -611,8 +613,8 @@ const newGame = function () {
   turnCycle = setInterval(turn, turnDuration.baseSpeed + turnDuration.speedModifier, grid, snake);
 };
 
-$(document).ready(function () {
-  $('button').click(function (event) {
+$(document).ready(() => {
+  $('button').click(() => {
     clearInterval(turnCycle);
     turnDuration.reset();
     newGame();
