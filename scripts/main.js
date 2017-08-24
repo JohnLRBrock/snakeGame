@@ -28,7 +28,7 @@ const turnDuration = {
 };
 
 // returns grid object
-const gridFactory = function (width, height) {
+const gridFactory = (width, height) => {
   // validate inputs
   if (!Number.isInteger(width) || !Number.isInteger(height)) {
     console.log("Grid's arguments weren't integers");

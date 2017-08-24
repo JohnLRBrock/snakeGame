@@ -4,5 +4,10 @@
     "jQuery": true,
     "$": true,
     "document": true
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jquery": true
   }
 }
